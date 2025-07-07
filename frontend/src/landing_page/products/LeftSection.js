@@ -1,7 +1,9 @@
 import React from 'react'
 
-export default function LeftSection() {
+function LeftSection() {
   return (
-    <div>LeftSection</div>
+    <h1>LeftSection</h1>
   )
 }
+
+export default LeftSection;

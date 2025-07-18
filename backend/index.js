@@ -10,6 +10,7 @@ const { PositionsModel } = require("./model/PositionsModel.js");
 const { OrdersModel } = require("./model/OrdersModel.js");
 const { UsersModel } = require("./model/UsersModel.js");
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
@@ -17,9 +18,14 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(session({
-  secret: "yourSecretKey",
+  secret: 'yourSecret',
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URL,
+    collectionName: 'sessions'
+  }),
+  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -230,6 +236,9 @@ const uri = process.env.MONGO_URL;
 //   res.send("Done!");
 
 // });
+app.get('/', (req, res) => {
+  res.send('Backend is running!');
+});
 
 app.get("/allHoldings", async (req, res) => {
   let allHoldings = await HoldingsModel.find({});

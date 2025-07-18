@@ -91,8 +91,8 @@ const Menu = () => {
         </ul>
         <hr />
         <div className="profile" onClick={() => handleProfileClick()}>
-          <div className="avatar">ZU</div>
-          <p className="username">USERID</p>
+          <div className="avatar">{(JSON.parse(localStorage.getItem('user'))?.username || 'U')[0].toUpperCase()}</div>
+          <p className="username">{JSON.parse(localStorage.getItem('user'))?.username || 'User'}</p>
         </div>
       </div>
     </div>

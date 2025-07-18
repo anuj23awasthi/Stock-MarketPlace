@@ -8,14 +8,59 @@ const cors = require("cors");
 const { HoldingsModel } = require("./model/HoldingsModel.js");
 const { PositionsModel } = require("./model/PositionsModel.js");
 const { OrdersModel } = require("./model/OrdersModel.js");
+const { UsersModel } = require("./model/UsersModel.js");
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(session({
+  secret: "yourSecretKey",
+  resave: false,
+  saveUninitialized: false,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(UsersModel.authenticate()));
+passport.serializeUser(UsersModel.serializeUser());
+passport.deserializeUser(UsersModel.deserializeUser());
+
+
+
+// Login route using passport
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) return res.status(500).send({ message: 'Server error' });
+    if (!user) return res.status(401).send({ message: 'Invalid credentials' });
+    req.logIn(user, (err) => {
+      if (err) return res.status(500).send({ message: 'Login failed' });
+      // You can send a token or user info here if needed
+      return res.send({ success: true, message: 'Login successful', user: { username: user.username, email: user.email } });
+    });
+  })(req, res, next);
+});
+
+// Signup route using passport-local-mongoose
+app.post("/signup", async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    // Check if user already exists by username or email
+    const existingUser = await UsersModel.findOne({ $or: [ { username }, { email } ] });
+    if (existingUser) {
+      return res.status(400).send({ success: false, message: "User already exists with this username or email." });
+    }
+    const user = new UsersModel({ username, email });
+    await UsersModel.register(user, password);
+    res.send({ success: true, message: "Signup successful" });
+  } catch (err) {
+    res.status(400).send({ success: false, message: err.message });
+  }
+});
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
-
-const app = express();
-
-app.use(cors());
-app.use(bodyParser.json());
 
 // app.get("/addHoldings", async (req, res) => {
 
@@ -210,8 +255,13 @@ app.get("/allOrders", async (req, res) => {
   let allOrders = await OrdersModel.find({});
   res.send(allOrders);
 });
-app.listen(PORT, () => {
-  console.log("App started!");
-  mongoose.connect(uri);
-  console.log("DB started!");
-});
+mongoose.connect(uri)
+  .then(() => {
+    console.log("DB started!");
+    app.listen(PORT, () => {
+      console.log("App started!");
+    });
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });

@@ -1,19 +1,27 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Signup() {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMsg("");
     try {
-      await axios.post("http://localhost:3001/signup", form);
-      setMsg("Signup successful! Please login.");
+      const res = await axios.post("http://localhost:3002/signup", form);
+      // Store the exact username entered at signup in localStorage for dashboard display
+      if (res.data && (res.data.success || res.data._id)) {
+        localStorage.setItem('user', JSON.stringify({ username: form.username }));
+        setMsg("Signup successful! Redirecting to dashboard...");
+        setTimeout(() => { window.location.href = `http://localhost:3000/?username=${encodeURIComponent(form.username)}`; }, 1000);
+      } else {
+        setMsg("Signup failed. User may already exist.");
+      }
     } catch {
       setMsg("Signup failed. User may already exist.");
     }
@@ -51,6 +59,7 @@ function Signup() {
             required
             className="signup-input"
           />
+      
         </div>
         <button type="submit" className="signup-btn">Sign up</button>
             <div className="signup-msg" style={{color:msg.includes("success")?"#2563eb":"#e74c3c"}}>

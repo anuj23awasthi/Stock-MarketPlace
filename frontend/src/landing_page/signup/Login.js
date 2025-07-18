@@ -4,20 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import '../../index.css';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
+  // Removed duplicate and misplaced code block
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage('');
     try {
-      const res = await axios.post('http://localhost:3001/login', { email, password });
-      if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
+      const res = await axios.post('http://localhost:3002/login', { username, password });
+      if (res.data.success) {
+        localStorage.setItem('user', JSON.stringify({ username }));
         setMessage('Login successful!');
-        setTimeout(() => navigate('/dashboard'), 1000);
+        setTimeout(() => { window.location.href = `http://localhost:3000/?username=${encodeURIComponent(username)}`; }, 1000);
       } else {
         setMessage(res.data.message || 'Login failed');
       }
@@ -33,10 +34,10 @@ const Login = () => {
         <form className="signup-fields" onSubmit={handleLogin}>
           <input
             className="signup-input"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
             required
           />
           <input

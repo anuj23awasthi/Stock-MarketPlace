@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -15,7 +14,17 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
 const app = express();
-app.use(cors());
+
+// Load URLs from .env
+const FRONTEND_URL = process.env.FRONTEND_URL;
+const DASHBOARD_URL = process.env.DASHBOARD_URL;
+const BACKEND_URL = process.env.BACKEND_URL;
+
+// Use CORS with allowed origins from .env
+app.use(cors({
+  origin: [FRONTEND_URL, DASHBOARD_URL],
+  credentials: true
+}));
 app.use(bodyParser.json());
 app.use(session({
   secret: 'yourSecret',

@@ -1,11 +1,11 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
 import axios from "axios";
-
 import GeneralContext from "./GeneralContext.js";
-
 import "./BuyActionWindow.css";
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const BuyActionWindow = ({ uid }) => {
 
@@ -13,12 +13,12 @@ const BuyActionWindow = ({ uid }) => {
   const [stockPrice, setStockPrice] = useState(0.0);
 
   const handleBuyClick = () => {
-    axios.post("http://localhost:3002/newOrder", {
+    axios.post(`${BACKEND_URL}/newOrder`, {
       name: uid,
       qty: stockQuantity,
       price: stockPrice,
       mode: "BUY",
-    });
+    }, { withCredentials: true });
 
     GeneralContext.closeBuyWindow();
   };

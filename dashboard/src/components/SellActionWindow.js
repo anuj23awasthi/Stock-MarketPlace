@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+
 import axios from "axios";
 import "./BuyActionWindow.css";
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const SellActionWindow = ({ uid }) => {
   const [qty, setQty] = useState(1);
@@ -8,12 +11,12 @@ const SellActionWindow = ({ uid }) => {
   const [success, setSuccess] = useState(false);
 
   const handleSell = () => {
-    axios.post("http://localhost:3002/newOrder", {
+    axios.post(`${BACKEND_URL}/newOrder`, {
       name: uid,
       qty,
       price,
       mode: "SELL",
-    }).then(() => setSuccess(true));
+    }, { withCredentials: true }).then(() => setSuccess(true));
   };
 
   return (

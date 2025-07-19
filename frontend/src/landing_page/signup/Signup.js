@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const DASHBOARD_URL = process.env.REACT_APP_DASHBOARD_URL;
+
 function Signup() {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [msg, setMsg] = useState("");
@@ -13,12 +16,12 @@ function Signup() {
     e.preventDefault();
     setMsg("");
     try {
-      const res = await axios.post("http://localhost:3002/signup", form);
+      const res = await axios.post(`${BACKEND_URL}/signup`, form);
       // Store the exact username entered at signup in localStorage for dashboard display
       if (res.data && (res.data.success || res.data._id)) {
         localStorage.setItem('user', JSON.stringify({ username: form.username }));
         setMsg("Signup successful! Redirecting to dashboard...");
-        setTimeout(() => { window.location.href = `http://localhost:3000/?username=${encodeURIComponent(form.username)}`; }, 1000);
+        setTimeout(() => { window.location.href = `${DASHBOARD_URL}?username=${encodeURIComponent(form.username)}`; }, 1000);
       } else {
         setMsg("Signup failed. User may already exist.");
       }

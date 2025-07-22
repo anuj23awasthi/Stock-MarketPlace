@@ -21,15 +21,11 @@ const DASHBOARD_URL = process.env.DASHBOARD_URL;
 const BACKEND_URL = process.env.BACKEND_URL;
 
 // Use CORS with allowed origins from .env
-// app.use(cors({
-//   origin: [FRONTEND_URL, DASHBOARD_URL],
-//   credentials: true
-// }));
-// const cors = require('cors');
 app.use(cors({
-  origin: 'https://stock-market-place.vercel.app',
+  origin: [FRONTEND_URL, DASHBOARD_URL],
   credentials: true
 }));
+
 
 app.use(bodyParser.json());
 app.use(session({

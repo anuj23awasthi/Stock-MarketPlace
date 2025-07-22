@@ -18,7 +18,7 @@ const Login = () => {
     e.preventDefault();
     setMessage('');
     try {
-      const res = await axios.post(`${BACKEND_URL}login`, { username, password });
+      const res = await axios.post(`${BACKEND_URL}/login`, { username, password });
       if (res.data.success) {
         localStorage.setItem('user', JSON.stringify({ username }));
         setMessage('Login successful!');

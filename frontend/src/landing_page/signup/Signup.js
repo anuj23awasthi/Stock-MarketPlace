@@ -16,7 +16,7 @@ function Signup() {
     e.preventDefault();
     setMsg("");
     try {
-      const res = await axios.post(`${BACKEND_URL}/signup`, form);
+      const res = await axios.post(`${BACKEND_URL}signup`, form);
       // Store the exact username entered at signup in localStorage for dashboard display
       if (res.data && (res.data.success || res.data._id)) {
         localStorage.setItem('user', JSON.stringify({ username: form.username }));
